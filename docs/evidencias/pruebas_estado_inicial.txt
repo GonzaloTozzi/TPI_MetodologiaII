@@ -1,0 +1,37 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.6, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\sante\AppData\Local\Python\pythoncore-3.14-64\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\sante\OneDrive\Desktop\MetodologÝa de Sistemas 2\TPI GRUPAL 4 personas (entrega 8 de noviembre)\TPI_MetodologiaII
+plugins: platformdirs-4.13.5, cov-7.1.0
+collecting ... collected 28 items
+
+tests/test_comportamiento.py::test_salir_con_opcion_cero_termina_sin_error PASSED [  3%]
+tests/test_comportamiento.py::test_opcion_inexistente_muestra_mensaje PASSED [  7%]
+tests/test_comportamiento.py::test_listar_sin_solicitudes PASSED         [ 10%]
+tests/test_comportamiento.py::test_registrar_solicitud_valida PASSED     [ 14%]
+tests/test_comportamiento.py::test_registrar_asigna_ids_correlativos PASSED [ 17%]
+tests/test_comportamiento.py::test_registrar_rechaza_estudiante_vacio PASSED [ 21%]
+tests/test_comportamiento.py::test_registrar_rechaza_descripcion_vacia PASSED [ 25%]
+tests/test_comportamiento.py::test_cambiar_estado_valido PASSED          [ 28%]
+tests/test_comportamiento.py::test_cambiar_estado_invalido_no_modifica_la_solicitud PASSED [ 32%]
+tests/test_comportamiento.py::test_cambiar_estado_de_id_inexistente_no_modifica_nada PASSED [ 35%]
+tests/test_comportamiento.py::test_id_no_numerico_avisa_y_el_programa_sigue PASSED [ 39%]
+tests/test_comportamiento.py::test_asignar_responsable_valido PASSED     [ 42%]
+tests/test_comportamiento.py::test_asignar_rechaza_nombre_vacio PASSED   [ 46%]
+tests/test_comportamiento.py::test_asignar_a_id_inexistente_no_modifica_nada PASSED [ 50%]
+tests/test_comportamiento.py::test_filtrar_por_estado PASSED             [ 53%]
+tests/test_comportamiento.py::test_filtrar_no_distingue_mayusculas PASSED [ 57%]
+tests/test_comportamiento.py::test_reporte_cuenta_por_estado PASSED      [ 60%]
+tests/test_comportamiento.py::test_reporte_sin_solicitudes PASSED        [ 64%]
+tests/test_comportamiento.py::test_el_registro_persiste_entre_ejecuciones PASSED [ 67%]
+tests/test_comportamiento.py::test_el_cambio_de_estado_persiste_entre_ejecuciones PASSED [ 71%]
+tests/test_comportamiento.py::test_la_asignacion_persiste_entre_ejecuciones PASSED [ 75%]
+tests/test_comportamiento.py::test_archivo_de_datos_se_crea_al_registrar_la_primera_solicitud PASSED [ 78%]
+tests/test_defectos_conocidos.py::test_cambiar_estado_rechaza_el_estado_escrito_en_minusculas PASSED [ 82%]
+tests/test_defectos_conocidos.py::test_errores_distintos_muestran_el_mismo_mensaje PASSED [ 85%]
+tests/test_defectos_conocidos.py::test_registrar_acepta_prioridad_y_correo_sin_validar PASSED [ 89%]
+tests/test_defectos_conocidos.py::test_listado_muestra_el_responsable_como_diccionario PASSED [ 92%]
+tests/test_defectos_conocidos.py::test_filtrar_sin_resultados_no_muestra_ningun_mensaje PASSED [ 96%]
+tests/test_defectos_conocidos.py::test_archivo_de_datos_corrupto_cierra_el_programa PASSED [100%]
+
+============================= 28 passed in 1.15s ==============================
