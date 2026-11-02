@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+solicitudes.json
+.pytest_cache/
