@@ -1,3 +1,5 @@
+"""Punto de entrada: arma las dependencias y arranca la consola."""
+
 import sys
 
 from consola import Consola
@@ -9,6 +11,7 @@ ARCHIVO_DATOS = "solicitudes.json"
 
 
 def main() -> int:
+    """Devuelve 1 si el archivo de datos está dañado y 0 al salir normalmente."""
     try:
         servicio = ServicioSolicitudes(RepositorioJSON(ARCHIVO_DATOS))
     except ArchivoDeDatosInvalido as error:

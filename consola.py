@@ -1,3 +1,5 @@
+"""Interfaz de consola: menú, lectura de datos y mensajes al usuario."""
+
 from __future__ import annotations
 
 from typing import Optional
@@ -7,7 +9,9 @@ from modelos import DatosSolicitud, Estado, Estudiante, Prioridad, Responsable
 from servicio import ServicioSolicitudes
 
 
-class Consola:
+class Consola:  # pylint: disable=too-few-public-methods
+    """Menú interactivo; delega todas las reglas en el servicio."""
+
     def __init__(self, servicio: ServicioSolicitudes) -> None:
         self._servicio = servicio
         self._opciones = {
@@ -20,6 +24,7 @@ class Consola:
         }
 
     def ejecutar(self) -> None:
+        """Muestra el menú hasta que el usuario elige 0 (Salir)."""
         while True:
             self._mostrar_menu()
             opcion = input("Opción: ").strip()
