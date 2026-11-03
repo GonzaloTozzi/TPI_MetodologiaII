@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Protocol
 
+from errores import ArchivoDeDatosInvalido
 from modelos import Solicitud
 
 
@@ -22,8 +23,11 @@ class RepositorioJSON:
     def cargar_todas(self) -> list[Solicitud]:
         if not self._ruta.exists():
             return []
-        with self._ruta.open("r", encoding="utf-8") as archivo:
-            return [Solicitud.desde_dict(datos) for datos in json.load(archivo)]
+        try:
+            with self._ruta.open("r", encoding="utf-8") as archivo:
+                return [Solicitud.desde_dict(datos) for datos in json.load(archivo)]
+        except (ValueError, KeyError, TypeError) as error:
+            raise ArchivoDeDatosInvalido(self._ruta.name) from error
 
     def guardar_todas(self, solicitudes: list[Solicitud]) -> None:
         with self._ruta.open("w", encoding="utf-8") as archivo:

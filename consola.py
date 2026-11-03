@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from modelos import DatosSolicitud, Estado, Estudiante, Responsable
+from errores import ErrorSolicitudes
+from modelos import DatosSolicitud, Estado, Estudiante, Prioridad, Responsable
 from servicio import ServicioSolicitudes
 
 
@@ -31,7 +32,7 @@ class Consola:
                 print("Opción inválida.")
 
     def _mostrar_menu(self) -> None:
-        print("\n=== SOLICITUDES ACADÉMICAS ===")
+        print("\nSOLICITUDES ACADÉMICAS")
         for clave, (texto, _) in self._opciones.items():
             print(f"{clave}. {texto}")
         print("0. Salir")
@@ -42,9 +43,14 @@ class Consola:
             estudiante=estudiante,
             tipo=input("Tipo de solicitud: "),
             descripcion=input("Descripción: "),
-            prioridad=input("Prioridad (Baja/Media/Alta): "),
+            prioridad=input(f"Prioridad ({'/'.join(Prioridad.valores())}): "),
         )
-        print("Registrada." if self._servicio.registrar(datos) else "Datos inválidos.")
+        try:
+            self._servicio.registrar(datos)
+        except ErrorSolicitudes as error:
+            print(f"Datos inválidos: {error}")
+            return
+        print("Registrada.")
 
     def _listar(self) -> None:
         solicitudes = self._servicio.listar()
@@ -58,19 +64,30 @@ class Consola:
         if identificador is None:
             return
         estado = input(f"Estado ({'/'.join(Estado.valores())}): ")
-        actualizado = self._servicio.cambiar_estado(identificador, estado)
-        print("Actualizado." if actualizado else "No se pudo actualizar.")
+        try:
+            self._servicio.cambiar_estado(identificador, estado)
+        except ErrorSolicitudes as error:
+            print(f"No se pudo actualizar: {error}")
+            return
+        print("Actualizado.")
 
     def _asignar_responsable(self) -> None:
         identificador = self._leer_id()
         if identificador is None:
             return
         responsable = Responsable(nombre=input("Responsable: "), area=input("Área: "))
-        asignado = self._servicio.asignar_responsable(identificador, responsable)
-        print("Asignado." if asignado else "No se pudo asignar.")
+        try:
+            self._servicio.asignar_responsable(identificador, responsable)
+        except ErrorSolicitudes as error:
+            print(f"No se pudo asignar: {error}")
+            return
+        print("Asignado.")
 
     def _filtrar(self) -> None:
-        for solicitud in self._servicio.filtrar_por_estado(input("Estado a filtrar: ")):
+        encontradas = self._servicio.filtrar_por_estado(input("Estado a filtrar: "))
+        if not encontradas:
+            print("No hay solicitudes con ese estado.")
+        for solicitud in encontradas:
             print(solicitud.linea_resumen())
 
     def _reporte(self) -> None:
