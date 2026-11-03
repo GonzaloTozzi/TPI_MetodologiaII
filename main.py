@@ -1,5 +1,6 @@
 import json
 import os
+from dataclasses import asdict, dataclass
 from enum import Enum
 
 ARCHIVO = "solicitudes.json"
@@ -15,6 +16,26 @@ class Estado(Enum):
         return [estado.value for estado in cls]
 
 
+@dataclass
+class Estudiante:
+    nombre: str
+    correo: str
+
+
+@dataclass
+class Responsable:
+    nombre: str
+    area: str
+
+
+@dataclass
+class DatosSolicitud:
+    estudiante: Estudiante
+    tipo: str
+    descripcion: str
+    prioridad: str
+
+
 def cargar():
     if not os.path.exists(ARCHIVO):
         return []
@@ -27,13 +48,19 @@ def guardar(solicitudes):
         json.dump(solicitudes, archivo, ensure_ascii=False, indent=2)
 
 
-def registrar(solicitudes, estudiante, correo, tipo, descripcion, prioridad):
-    if not estudiante.strip() or not descripcion.strip():
+def registrar(solicitudes, datos):
+    if not datos.estudiante.nombre.strip() or not datos.descripcion.strip():
         return False
     nuevo_id = max((s["id"] for s in solicitudes), default=0) + 1
-    solicitudes.append({"id": nuevo_id, "estudiante": {"nombre": estudiante, "correo": correo},
-                       "tipo": tipo, "descripcion": descripcion, "prioridad": prioridad,
-                       "estado": Estado.PENDIENTE.value, "responsable": None})
+    solicitudes.append({
+        "id": nuevo_id,
+        "estudiante": asdict(datos.estudiante),
+        "tipo": datos.tipo,
+        "descripcion": datos.descripcion,
+        "prioridad": datos.prioridad,
+        "estado": Estado.PENDIENTE.value,
+        "responsable": None,
+    })
     guardar(solicitudes)
     return True
 
@@ -63,11 +90,11 @@ def cambiar_estado(solicitudes, identificador, estado):
     return True
 
 
-def asignar(solicitudes, identificador, nombre, area):
+def asignar(solicitudes, identificador, responsable):
     solicitud = buscar_por_id(solicitudes, identificador)
-    if solicitud is None or not nombre.strip():
+    if solicitud is None or not responsable.nombre.strip():
         return False
-    solicitud["responsable"] = {"nombre": nombre, "area": area}
+    solicitud["responsable"] = asdict(responsable)
     guardar(solicitudes)
     return True
 
@@ -100,12 +127,14 @@ def mostrar_menu():
 
 
 def opcion_registrar(solicitudes):
-    estudiante = input("Estudiante: ")
-    correo = input("Correo: ")
-    tipo = input("Tipo de solicitud: ")
-    descripcion = input("Descripción: ")
-    prioridad = input("Prioridad (Baja/Media/Alta): ")
-    if registrar(solicitudes, estudiante, correo, tipo, descripcion, prioridad):
+    estudiante = Estudiante(nombre=input("Estudiante: "), correo=input("Correo: "))
+    datos = DatosSolicitud(
+        estudiante=estudiante,
+        tipo=input("Tipo de solicitud: "),
+        descripcion=input("Descripción: "),
+        prioridad=input("Prioridad (Baja/Media/Alta): "),
+    )
+    if registrar(solicitudes, datos):
         print("Registrada.")
     else:
         print("Datos inválidos.")
@@ -126,9 +155,8 @@ def opcion_asignar(solicitudes):
     identificador = leer_id()
     if identificador is None:
         return
-    nombre = input("Responsable: ")
-    area = input("Área: ")
-    if asignar(solicitudes, identificador, nombre, area):
+    responsable = Responsable(nombre=input("Responsable: "), area=input("Área: "))
+    if asignar(solicitudes, identificador, responsable):
         print("Asignado.")
     else:
         print("No se pudo asignar.")
