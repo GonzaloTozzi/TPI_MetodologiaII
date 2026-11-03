@@ -73,41 +73,74 @@ def reporte(solicitudes):
         print(f'{estado}: {sum(1 for s in solicitudes if s["estado"] == estado)}')
 
 
+def leer_id():
+    try:
+        return int(input("ID: "))
+    except ValueError:
+        print("ID inválido.")
+        return None
+
+
+def mostrar_menu():
+    print("\n=== SOLICITUDES ACADÉMICAS ===")
+    print("1. Registrar solicitud\n2. Listar solicitudes\n3. Cambiar estado")
+    print("4. Asignar responsable\n5. Filtrar por estado\n6. Reporte\n0. Salir")
+
+
+def opcion_registrar(solicitudes):
+    estudiante = input("Estudiante: ")
+    correo = input("Correo: ")
+    tipo = input("Tipo de solicitud: ")
+    descripcion = input("Descripción: ")
+    prioridad = input("Prioridad (Baja/Media/Alta): ")
+    if registrar(solicitudes, estudiante, correo, tipo, descripcion, prioridad):
+        print("Registrada.")
+    else:
+        print("Datos inválidos.")
+
+
+def opcion_cambiar_estado(solicitudes):
+    identificador = leer_id()
+    if identificador is None:
+        return
+    estado = input("Estado (Pendiente/En proceso/Resuelta): ")
+    if cambiar_estado(solicitudes, identificador, estado):
+        print("Actualizado.")
+    else:
+        print("No se pudo actualizar.")
+
+
+def opcion_asignar(solicitudes):
+    identificador = leer_id()
+    if identificador is None:
+        return
+    nombre = input("Responsable: ")
+    area = input("Área: ")
+    if asignar(solicitudes, identificador, nombre, area):
+        print("Asignado.")
+    else:
+        print("No se pudo asignar.")
+
+
+def opcion_filtrar(solicitudes):
+    filtrar(solicitudes, input("Estado a filtrar: "))
+
+
 def main():
     solicitudes = cargar()
     while True:
-        print("\n=== SOLICITUDES ACADÉMICAS ===")
-        print("1. Registrar solicitud\n2. Listar solicitudes\n3. Cambiar estado")
-        print("4. Asignar responsable\n5. Filtrar por estado\n6. Reporte\n0. Salir")
+        mostrar_menu()
         opcion = input("Opción: ").strip()
         if opcion == "1":
-            estudiante = input("Estudiante: ")
-            correo = input("Correo: ")
-            tipo = input("Tipo de solicitud: ")
-            descripcion = input("Descripción: ")
-            prioridad = input("Prioridad (Baja/Media/Alta): ")
-            print("Registrada." if registrar(solicitudes, estudiante, correo, tipo, descripcion, prioridad) else "Datos inválidos.")
+            opcion_registrar(solicitudes)
         elif opcion == "2":
             listar(solicitudes)
         elif opcion == "3":
-            try:
-                identificador = int(input("ID: "))
-            except ValueError:
-                print("ID inválido.")
-                continue
-            estado = input("Estado (Pendiente/En proceso/Resuelta): ")
-            print("Actualizado." if cambiar_estado(solicitudes, identificador, estado) else "No se pudo actualizar.")
+            opcion_cambiar_estado(solicitudes)
         elif opcion == "4":
-            try:
-                identificador = int(input("ID: "))
-            except ValueError:
-                print("ID inválido.")
-                continue
-            nombre = input("Responsable: ")
-            area = input("Área: ")
-            print("Asignado." if asignar(solicitudes, identificador, nombre, area) else "No se pudo asignar.")
+            opcion_asignar(solicitudes)
         elif opcion == "5":
-            filtrar(solicitudes, input("Estado a filtrar: "))
+            opcion_filtrar(solicitudes)
         elif opcion == "6":
             reporte(solicitudes)
         elif opcion == "0":
