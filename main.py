@@ -1,7 +1,18 @@
 import json
 import os
+from enum import Enum
 
 ARCHIVO = "solicitudes.json"
+
+
+class Estado(Enum):
+    PENDIENTE = "Pendiente"
+    EN_PROCESO = "En proceso"
+    RESUELTA = "Resuelta"
+
+    @classmethod
+    def valores(cls):
+        return [estado.value for estado in cls]
 
 
 def cargar():
@@ -22,7 +33,7 @@ def registrar(solicitudes, estudiante, correo, tipo, descripcion, prioridad):
     nuevo_id = max((s["id"] for s in solicitudes), default=0) + 1
     solicitudes.append({"id": nuevo_id, "estudiante": {"nombre": estudiante, "correo": correo},
                        "tipo": tipo, "descripcion": descripcion, "prioridad": prioridad,
-                       "estado": "Pendiente", "responsable": None})
+                       "estado": Estado.PENDIENTE.value, "responsable": None})
     guardar(solicitudes)
     return True
 
@@ -42,7 +53,7 @@ def buscar_por_id(solicitudes, identificador):
 
 
 def cambiar_estado(solicitudes, identificador, estado):
-    if estado not in ("Pendiente", "En proceso", "Resuelta"):
+    if estado not in Estado.valores():
         return False
     solicitud = buscar_por_id(solicitudes, identificador)
     if solicitud is None:
@@ -69,8 +80,9 @@ def filtrar(solicitudes, estado):
 
 def reporte(solicitudes):
     print(f"Total: {len(solicitudes)}")
-    for estado in ("Pendiente", "En proceso", "Resuelta"):
-        print(f'{estado}: {sum(1 for s in solicitudes if s["estado"] == estado)}')
+    for estado in Estado:
+        cantidad = sum(1 for s in solicitudes if s["estado"] == estado.value)
+        print(f"{estado.value}: {cantidad}")
 
 
 def leer_id():
@@ -103,7 +115,7 @@ def opcion_cambiar_estado(solicitudes):
     identificador = leer_id()
     if identificador is None:
         return
-    estado = input("Estado (Pendiente/En proceso/Resuelta): ")
+    estado = input(f"Estado ({'/'.join(Estado.valores())}): ")
     if cambiar_estado(solicitudes, identificador, estado):
         print("Actualizado.")
     else:
