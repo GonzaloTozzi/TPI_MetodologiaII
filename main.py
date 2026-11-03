@@ -2,6 +2,7 @@ import json
 import os
 from dataclasses import asdict, dataclass
 from enum import Enum
+from typing import Optional
 
 ARCHIVO = "solicitudes.json"
 
@@ -36,56 +37,98 @@ class DatosSolicitud:
     prioridad: str
 
 
+@dataclass
+class Solicitud:
+    id: int
+    estudiante: Estudiante
+    tipo: str
+    descripcion: str
+    prioridad: str
+    estado: Estado = Estado.PENDIENTE
+    responsable: Optional[Responsable] = None
+
+    def cambiar_estado(self, estado):
+        self.estado = estado
+
+    def asignar_responsable(self, responsable):
+        self.responsable = responsable
+
+    def linea_listado(self):
+        responsable = asdict(self.responsable) if self.responsable else "Sin asignar"
+        return (
+            f"#{self.id} | {self.estudiante.nombre} | {self.tipo} | {self.prioridad} | "
+            f"{self.estado.value} | Responsable: {responsable}"
+        )
+
+    def linea_resumen(self):
+        return f"#{self.id}: {self.descripcion} ({self.estado.value})"
+
+    def a_dict(self):
+        return {
+            "id": self.id,
+            "estudiante": asdict(self.estudiante),
+            "tipo": self.tipo,
+            "descripcion": self.descripcion,
+            "prioridad": self.prioridad,
+            "estado": self.estado.value,
+            "responsable": asdict(self.responsable) if self.responsable else None,
+        }
+
+    @classmethod
+    def desde_dict(cls, datos):
+        responsable = datos["responsable"]
+        return cls(
+            id=datos["id"],
+            estudiante=Estudiante(**datos["estudiante"]),
+            tipo=datos["tipo"],
+            descripcion=datos["descripcion"],
+            prioridad=datos["prioridad"],
+            estado=Estado(datos["estado"]),
+            responsable=Responsable(**responsable) if responsable else None,
+        )
+
+
 def cargar():
     if not os.path.exists(ARCHIVO):
         return []
     with open(ARCHIVO, "r", encoding="utf-8") as archivo:
-        return json.load(archivo)
+        return [Solicitud.desde_dict(datos) for datos in json.load(archivo)]
 
 
 def guardar(solicitudes):
     with open(ARCHIVO, "w", encoding="utf-8") as archivo:
-        json.dump(solicitudes, archivo, ensure_ascii=False, indent=2)
+        json.dump([s.a_dict() for s in solicitudes], archivo, ensure_ascii=False, indent=2)
 
 
 def registrar(solicitudes, datos):
     if not datos.estudiante.nombre.strip() or not datos.descripcion.strip():
         return False
-    nuevo_id = max((s["id"] for s in solicitudes), default=0) + 1
-    solicitudes.append({
-        "id": nuevo_id,
-        "estudiante": asdict(datos.estudiante),
-        "tipo": datos.tipo,
-        "descripcion": datos.descripcion,
-        "prioridad": datos.prioridad,
-        "estado": Estado.PENDIENTE.value,
-        "responsable": None,
-    })
+    nuevo_id = max((s.id for s in solicitudes), default=0) + 1
+    solicitudes.append(Solicitud(
+        id=nuevo_id,
+        estudiante=datos.estudiante,
+        tipo=datos.tipo,
+        descripcion=datos.descripcion,
+        prioridad=datos.prioridad,
+    ))
     guardar(solicitudes)
     return True
 
 
-def listar(solicitudes):
-    if not solicitudes:
-        print("No hay solicitudes.")
-    for s in solicitudes:
-        print(f'#{s["id"]} | {s["estudiante"]["nombre"]} | {s["tipo"]} | {s["prioridad"]} | {s["estado"]} | Responsable: {s["responsable"] or "Sin asignar"}')
-
-
 def buscar_por_id(solicitudes, identificador):
-    for s in solicitudes:
-        if s["id"] == identificador:
-            return s
+    for solicitud in solicitudes:
+        if solicitud.id == identificador:
+            return solicitud
     return None
 
 
-def cambiar_estado(solicitudes, identificador, estado):
-    if estado not in Estado.valores():
+def cambiar_estado(solicitudes, identificador, texto_estado):
+    if texto_estado not in Estado.valores():
         return False
     solicitud = buscar_por_id(solicitudes, identificador)
     if solicitud is None:
         return False
-    solicitud["estado"] = estado
+    solicitud.cambiar_estado(Estado(texto_estado))
     guardar(solicitudes)
     return True
 
@@ -94,22 +137,17 @@ def asignar(solicitudes, identificador, responsable):
     solicitud = buscar_por_id(solicitudes, identificador)
     if solicitud is None or not responsable.nombre.strip():
         return False
-    solicitud["responsable"] = asdict(responsable)
+    solicitud.asignar_responsable(responsable)
     guardar(solicitudes)
     return True
 
 
-def filtrar(solicitudes, estado):
-    for s in solicitudes:
-        if s["estado"].lower() == estado.lower():
-            print(f'#{s["id"]}: {s["descripcion"]} ({s["estado"]})')
+def filtrar_por_estado(solicitudes, texto_estado):
+    return [s for s in solicitudes if s.estado.value.lower() == texto_estado.lower()]
 
 
-def reporte(solicitudes):
-    print(f"Total: {len(solicitudes)}")
-    for estado in Estado:
-        cantidad = sum(1 for s in solicitudes if s["estado"] == estado.value)
-        print(f"{estado.value}: {cantidad}")
+def contar_por_estado(solicitudes):
+    return {estado: sum(1 for s in solicitudes if s.estado is estado) for estado in Estado}
 
 
 def leer_id():
@@ -140,6 +178,13 @@ def opcion_registrar(solicitudes):
         print("Datos inválidos.")
 
 
+def opcion_listar(solicitudes):
+    if not solicitudes:
+        print("No hay solicitudes.")
+    for solicitud in solicitudes:
+        print(solicitud.linea_listado())
+
+
 def opcion_cambiar_estado(solicitudes):
     identificador = leer_id()
     if identificador is None:
@@ -163,7 +208,14 @@ def opcion_asignar(solicitudes):
 
 
 def opcion_filtrar(solicitudes):
-    filtrar(solicitudes, input("Estado a filtrar: "))
+    for solicitud in filtrar_por_estado(solicitudes, input("Estado a filtrar: ")):
+        print(solicitud.linea_resumen())
+
+
+def opcion_reporte(solicitudes):
+    print(f"Total: {len(solicitudes)}")
+    for estado, cantidad in contar_por_estado(solicitudes).items():
+        print(f"{estado.value}: {cantidad}")
 
 
 def main():
@@ -174,7 +226,7 @@ def main():
         if opcion == "1":
             opcion_registrar(solicitudes)
         elif opcion == "2":
-            listar(solicitudes)
+            opcion_listar(solicitudes)
         elif opcion == "3":
             opcion_cambiar_estado(solicitudes)
         elif opcion == "4":
@@ -182,7 +234,7 @@ def main():
         elif opcion == "5":
             opcion_filtrar(solicitudes)
         elif opcion == "6":
-            reporte(solicitudes)
+            opcion_reporte(solicitudes)
         elif opcion == "0":
             break
         else:
