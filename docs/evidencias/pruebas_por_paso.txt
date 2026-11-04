@@ -1,0 +1,16 @@
+Resultado de las pruebas después de cada commit
+Comando: py -m pytest -q
+
+57d495f Se subio el codigo original: sin pruebas todavía
+180a657 Agregar pruebas de comportamiento sobre la version inicial: 28 passed
+247b29d docs: incorporación de documentación técnica Etapas 1, 2 y 3 en Markdown: 28 passed
+4a8db61 Completar el diagnostico de las etapas 1 a 3 con evidencia, impacto, riesgo y prioridad: 28 passed
+ce5be3a Merge pull request #1 from GonzaloTozzi/diagnostico-completo: 28 passed
+e007c0d Extraer metodos del menu principal y unificar la lectura del ID: 28 passed
+7060fe0 Reemplazar los textos de estado por una enumeracion: 28 passed
+94d70b0 Introducir objetos de parametros para registrar y asignar: 28 passed
+a8b9a56 Mover el comportamiento y el formato de la solicitud a la clase Solicitud: 28 passed
+adaac8d Separar el sistema en modelos, repositorio, servicio y consola: 28 passed
+293a321 Corregir defectos visibles con validaciones y mensajes de error especificos: 29 passed
+2b8003f Agregar pruebas unitarias del modelo y del servicio: 48 passed
+8339f89 Aplicar correcciones del code review: docstrings y configuracion de flake8: 48 passed

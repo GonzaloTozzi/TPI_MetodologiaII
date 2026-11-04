@@ -1,0 +1,111 @@
+Métricas de la versión refactorizada
+Herramientas: pylint 4.1.3, flake8 7.5.0, radon 6.0.1
+
+py -m pylint main.py consola.py servicio.py repositorio.py modelos.py errores.py
+------------------------------------
+Your code has been rated at 10.00/10
+
+py -m flake8 --max-line-length 100 --max-complexity 10 main.py consola.py servicio.py repositorio.py modelos.py errores.py
+Sin observaciones.
+
+py -m radon cc -s -a main.py consola.py servicio.py repositorio.py modelos.py errores.py
+main.py
+    F 13:0 main - A (2)
+consola.py
+    M 26:4 Consola.ejecutar - A (4)
+    C 12:0 Consola - A (3)
+    M 60:4 Consola._listar - A (3)
+    M 67:4 Consola._cambiar_estado - A (3)
+    M 79:4 Consola._asignar_responsable - A (3)
+    M 91:4 Consola._filtrar - A (3)
+    M 39:4 Consola._mostrar_menu - A (2)
+    M 45:4 Consola._registrar - A (2)
+    M 98:4 Consola._reporte - A (2)
+    M 104:4 Consola._leer_id - A (2)
+    M 15:4 Consola.__init__ - A (1)
+servicio.py
+    M 48:4 ServicioSolicitudes.contar_por_estado - A (4)
+    M 43:4 ServicioSolicitudes.filtrar_por_estado - A (3)
+    M 55:4 ServicioSolicitudes._buscar - A (3)
+    C 10:0 ServicioSolicitudes - A (2)
+    M 61:4 ServicioSolicitudes._siguiente_id - A (2)
+    M 13:4 ServicioSolicitudes.__init__ - A (1)
+    M 17:4 ServicioSolicitudes.listar - A (1)
+    M 21:4 ServicioSolicitudes.registrar - A (1)
+    M 28:4 ServicioSolicitudes.cambiar_estado - A (1)
+    M 36:4 ServicioSolicitudes.asignar_responsable - A (1)
+    M 64:4 ServicioSolicitudes._guardar - A (1)
+repositorio.py
+    M 29:4 RepositorioJSON.cargar_todas - A (4)
+    C 23:0 RepositorioJSON - A (3)
+    C 13:0 RepositorioSolicitudes - A (2)
+    M 39:4 RepositorioJSON.guardar_todas - A (2)
+    M 16:4 RepositorioSolicitudes.cargar_todas - A (1)
+    M 19:4 RepositorioSolicitudes.guardar_todas - A (1)
+    M 26:4 RepositorioJSON.__init__ - A (1)
+modelos.py
+    F 66:0 correo_valido - A (3)
+    C 12:0 OpcionDeTexto - A (3)
+    M 21:4 OpcionDeTexto.desde_texto - A (3)
+    C 88:0 Responsable - A (3)
+    C 103:0 DatosSolicitud - A (3)
+    F 73:0 exigir_texto - A (2)
+    M 16:4 OpcionDeTexto.valores - A (2)
+    C 42:0 Estado - A (2)
+    C 54:0 Prioridad - A (2)
+    M 98:4 Responsable.__str__ - A (2)
+    M 111:4 DatosSolicitud.validar - A (2)
+    C 121:0 Solicitud - A (2)
+    M 153:4 Solicitud.linea_listado - A (2)
+    M 165:4 Solicitud.a_dict - A (2)
+    M 178:4 Solicitud.desde_dict - A (2)
+    M 30:4 OpcionDeTexto.mensaje_invalido - A (1)
+    M 37:4 OpcionDeTexto.nombre_campo - A (1)
+    M 50:4 Estado.nombre_campo - A (1)
+    M 62:4 Prioridad.nombre_campo - A (1)
+    C 80:0 Estudiante - A (1)
+    M 94:4 Responsable.validar - A (1)
+    M 133:4 Solicitud.nueva - A (1)
+    M 144:4 Solicitud.cambiar_estado - A (1)
+    M 148:4 Solicitud.asignar_responsable - A (1)
+    M 161:4 Solicitud.linea_resumen - A (1)
+errores.py
+    C 12:0 SolicitudNoEncontrada - A (2)
+    C 19:0 ArchivoDeDatosInvalido - A (2)
+    C 4:0 ErrorSolicitudes - A (1)
+    C 8:0 DatosInvalidos - A (1)
+    M 15:4 SolicitudNoEncontrada.__init__ - A (1)
+    M 22:4 ArchivoDeDatosInvalido.__init__ - A (1)
+
+61 blocks (classes, functions, methods) analyzed.
+Average complexity: A (1.9180327868852458)
+
+py -m radon raw -s main.py consola.py servicio.py repositorio.py modelos.py errores.py
+main.py
+    LOC: 25
+    LLOC: 18
+    SLOC: 16
+consola.py
+    LOC: 109
+    LLOC: 83
+    SLOC: 91
+servicio.py
+    LOC: 65
+    LLOC: 49
+    SLOC: 43
+repositorio.py
+    LOC: 42
+    LLOC: 30
+    SLOC: 23
+modelos.py
+    LOC: 189
+    LLOC: 138
+    SLOC: 123
+errores.py
+    LOC: 25
+    LLOC: 13
+    SLOC: 10
+** Total **
+    LOC: 455
+    LLOC: 331
+    SLOC: 306
